@@ -121,6 +121,8 @@ try {
   await page.click('button[value="submit"]');
   await page.waitForSelector("text=Formularz wysłany");
   check(true, "pełny formularz wysłany (walidacja wieku i zgód przeszła)");
+  const pdf = await page.request.get(`${link}/karta`);
+  check(pdf.status() === 200 && (pdf.headers()["content-type"] ?? "").includes("application/pdf"), "podgląd karty (PDF) dostępny dla rodzica");
 
   // 5. Zgłoszenie widoczne w panelu i w dzienniku.
   await admin.goto(`${APP}/admin`);

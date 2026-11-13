@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Czcionki do PDF muszą być w paczce serwerowej (funkcje Vercel).
+  outputFileTracingIncludes: { "/zgloszenie/**": ["./lib/pdf/fonts/**"] },
   reactStrictMode: true,
   poweredByHeader: false,
   // Strony administratora i formularze zawierają dane o zdrowiu dzieci – nie indeksujemy.

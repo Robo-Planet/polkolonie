@@ -33,6 +33,7 @@ export default async function FormularzPage({ params }: { params: Promise<{ toke
           Dane są tylko do odczytu. Zmiany zgłoś e-mailem do biura.
         </p>
         <p>PESEL: {pesel ? `***********${pesel.slice(-1)}` : "—"}</p>
+        <p><a className="button" href={`/zgloszenie/${token}/karta`}>Podgląd karty (PDF)</a></p>
       </main>
     );
   }
@@ -44,6 +45,7 @@ export default async function FormularzPage({ params }: { params: Promise<{ toke
         Wypełnij dane do umowy i karty kwalifikacyjnej. Możesz zapisać szkic i wrócić przez ten sam link.
         Wysłanie wymaga wszystkich pól oznaczonych jako wymagane.
       </p>
+      <p><a href={`/zgloszenie/${token}/karta`}>Podgląd karty kwalifikacyjnej (PDF)</a></p>
       <FullForm
         action={saveFullForm.bind(null, token)}
         minAge={t.minAge}
