@@ -117,6 +117,7 @@ model Application {
   updatedAt            DateTime          @updatedAt
 
   events               Event[]
+  charges              Charge[]
 
   @@index([turnusId, status])
 }
@@ -158,4 +159,67 @@ model RateLimit {
   count       Int      @default(0)
   windowStart DateTime @default(now())
   blockedUntil DateTime?
+}
+
+enum ChargeKind {
+  ZALICZKA // zaliczka 200 zł, 7 dni od zawarcia umowy
+  DOPLATA  // cena − zniżka − zaliczka, 14 dni przed startem
+  CALOSC   // późny zapis: cała kwota w 3 dni
+}
+
+// Należność: jedna na zgłoszenie i rodzaj.
+model Charge {
+  id             String       @id @default(cuid())
+  applicationId  String
+  application    Application  @relation(fields: [applicationId], references: [id])
+  kind           ChargeKind
+  amountGrosze   Int
+  paidGrosze     Int          @default(0)
+  dueDate        DateTime     @db.Date
+  paidAt         DateTime?
+  createdAt      DateTime     @default(now())
+  allocations    Allocation[]
+
+  @@unique([applicationId, kind])
+}
+
+enum BankSource {
+  ALERT  // alert Alerty24 (e-mail)
+  CSV    // import z Erste
+  MANUAL // ręczne oznaczenie przez biuro
+}
+
+enum MatchStatus {
+  UNMATCHED // brak zgłoszenia – do wyjaśnienia
+  PARTIAL   // przypisana część (np. nadpłata)
+  MATCHED   // w pełni przypisana
+}
+
+// Wpływ z banku. Saldo z alertu nie jest zapisywane.
+model BankTransaction {
+  id               String       @id @default(cuid())
+  source           BankSource
+  dedupeKey        String       @unique // np. "alert:<identyfikator>"
+  bookedAt         DateTime
+  amountGrosze     Int
+  title            String
+  senderName       String
+  recipientAccount String
+  messageId        String?
+  matchStatus      MatchStatus  @default(UNMATCHED)
+  applicationId    String?      // zgłoszenie wskazane przez kod w tytule lub przez biuro
+  createdAt        DateTime     @default(now())
+  allocations      Allocation[]
+
+  @@index([matchStatus])
+}
+
+model Allocation {
+  id             String          @id @default(cuid())
+  transactionId  String
+  transaction    BankTransaction @relation(fields: [transactionId], references: [id])
+  chargeId       String
+  charge         Charge          @relation(fields: [chargeId], references: [id])
+  amountGrosze   Int
+  createdAt      DateTime        @default(now())
 }

@@ -6,7 +6,10 @@
 //   SERVER_LOG=/ścieżka/do/server.log node tests/e2e/smoke.mjs
 // Przeglądarka: Chromium z przygotowanego środowiska (bez instalacji Playwright).
 import { createRequire } from "node:module";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const OTPAuth = require("otpauth");
@@ -136,6 +139,35 @@ try {
   check(true, "dziennik zdarzeń zawiera utworzenie zgłoszenia");
   await admin.waitForSelector("text=form.submitted");
   check(true, "dziennik zdarzeń zawiera wysłanie formularza");
+
+  // 5b. Płatność: zaliczka 200 zł przypisana alertem (syntetyczny e-mail z fixtury, z kodem w tytule).
+  // Podpis DKIM po zmianie treści nie przechodzi, więc alert trafia do przetwarzania z --no-dkim.
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const fixture = readFileSync(path.join(here, "..", "fixtures", "alerty24-wplyw-zmodyfikowany.eml"), "utf8");
+  const alertId = String(Math.floor(Math.random() * 1e9));
+  const synthetic = fixture
+    .replace(/(Ile:[\s\S]*?<b>\s*)1,00 PLN/, "$1200,00 PLN")
+    .replace(/(Tytuł:[\s\S]*?<b>\s*)przelew/, `$1${code} Jan Testowy`)
+    .replace("Identyfikator wiadomości: -1540367547", `Identyfikator wiadomości: -${alertId}`)
+    .replace("<b7047f5-778-2fd8-281b-6676717bd6>", `<e2e-${alertId}@erste.pl>`);
+  const tmpDir = path.join(here, ".tmp");
+  mkdirSync(tmpDir, { recursive: true });
+  const alertFile = path.join(tmpDir, `alert-${alertId}.eml`);
+  writeFileSync(alertFile, synthetic, "utf8");
+  const repo = path.join(here, "..", "..");
+  const strict = execFileSync("npx", ["tsx", "scripts/ingest-alert.ts", alertFile], { cwd: repo, encoding: "utf8" });
+  check(strict.includes('"status":"rejected"') && strict.includes("treść wiadomości została zmieniona"), "alert ze zmienioną treścią odrzucony przy weryfikacji DKIM");
+  const ingest = execFileSync("npx", ["tsx", "scripts/ingest-alert.ts", alertFile, "--no-dkim"], { cwd: repo, encoding: "utf8" });
+  check(ingest.includes('"status":"created"') && ingest.includes('"matchStatus":"MATCHED"'), "alert z kodem zgłoszenia przypisany automatycznie (MATCHED)");
+  rmSync(tmpDir, { recursive: true, force: true });
+
+  await admin.goto(`${APP}/admin`);
+  await admin.click(`a:has-text("${TURNUS}")`);
+  await admin.click(`a:has-text("${code}")`);
+  await admin.waitForSelector("text=Ma miejsce (po zaliczce)");
+  check(true, "po wpłacie zaliczki zgłoszenie ma miejsce (status: Ma miejsce)");
+  await admin.waitForSelector("text=payment.allocated");
+  check(true, "dziennik zawiera przypisanie wpłaty");
 
   // 6. Pułapka na boty: wypełnione ukryte pole nie tworzy zgłoszenia.
   const botCtx = await browser.newContext({ extraHTTPHeaders: { "x-forwarded-for": clientIp } });

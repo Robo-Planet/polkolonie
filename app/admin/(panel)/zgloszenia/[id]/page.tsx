@@ -11,7 +11,7 @@ export default async function ZgloszenieAdminPage({ params }: { params: Promise<
   const { id } = await params;
   const app = await prisma.application.findUnique({
     where: { id },
-    include: { turnus: true, events: { orderBy: { createdAt: "asc" } } },
+    include: { turnus: true, events: { orderBy: { createdAt: "asc" } }, charges: { orderBy: { dueDate: "asc" } } },
   });
   if (!app) notFound();
   const t = app.turnus;
@@ -39,6 +39,25 @@ export default async function ZgloszenieAdminPage({ params }: { params: Promise<
         <dt>Zgoda RODO</dt>
         <dd>{app.rodoConsentAt.toISOString().slice(0, 16).replace("T", " ")} UTC</dd>
       </dl>
+
+      <h2>Należności</h2>
+      {app.charges.length === 0 ? (
+        <p>Brak należności (formularz nie został wysłany).</p>
+      ) : (
+        <table>
+          <thead><tr><th>Rodzaj</th><th>Kwota</th><th>Termin</th><th>Wpłacono</th></tr></thead>
+          <tbody>
+            {app.charges.map((c) => (
+              <tr key={c.id}>
+                <td>{c.kind}</td>
+                <td>{formatGrosze(c.amountGrosze)}</td>
+                <td>{formatPlDate(c.dueDate)}</td>
+                <td>{c.paidAt ? `tak (${formatGrosze(c.paidGrosze)})` : `nie (${formatGrosze(c.paidGrosze)})`}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       <h2>Dziennik zdarzeń</h2>
       <ol className="events">

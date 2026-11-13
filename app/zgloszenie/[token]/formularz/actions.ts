@@ -7,6 +7,7 @@ import { encryptField } from "@/lib/crypto";
 import { logEvent } from "@/lib/events";
 import { formValues, type FormState } from "@/lib/form-state";
 import { parseFullForm } from "@/lib/full-form";
+import { ensureCharges } from "@/lib/payments/service";
 
 // Zapis szkicu i wysłanie pełnego formularza. Szkic zapisuje, co przechodzi walidację formatu;
 // wysłanie wymaga wszystkich pól obowiązkowych. Po wysłaniu formularz jest tylko do odczytu.
@@ -79,6 +80,7 @@ export async function saveFullForm(token: string, _prev: FormState, formData: Fo
     action: submit ? "form.submitted" : "form.draft_saved",
     note: submit ? "pełny formularz wysłany" : "szkic zapisany",
   });
+  if (submit) await ensureCharges(app.id);
   revalidatePath(`/zgloszenie/${token}`);
   revalidatePath(`/zgloszenie/${token}/formularz`);
 

@@ -10,6 +10,7 @@ const schema = z.object({
   APP_ENCRYPTION_KEY: z
     .string()
     .refine((v) => Buffer.from(v, "base64").length === 32, "APP_ENCRYPTION_KEY: 32 bajty w base64"),
+  CRON_SECRET: z.string().min(16).optional(),
   MAIL_TRANSPORT: z.enum(["log", "smtp"]).default("log"),
   MAIL_FROM: z.string().default("ROBOPLANET EVENTS S.C. <polkolonie@roboplanet.pl>"),
   SMTP_HOST: z.string().optional(),

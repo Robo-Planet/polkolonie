@@ -11,6 +11,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       <header className="panel-header">
         <nav>
           <Link href="/admin">Turnusy</Link>
+          <Link href="/admin/wplaty">Do wyjaśnienia</Link>
           <Link href="/admin/organizator">Organizator</Link>
         </nav>
         <div className="who">
