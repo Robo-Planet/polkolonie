@@ -1,6 +1,6 @@
 // Test end-to-end (ręczny): wymaga działającego serwera (npm run start) i konta administratora.
 // Użycie:
-//   APP_URL=http://localhost:3000 ADMIN_EMAIL=... ADMIN_PASSWORD=... ADMIN_TOTP_SECRET=... \
+//   APP_URL=http://localhost:3001 ADMIN_EMAIL=... ADMIN_PASSWORD=... ADMIN_TOTP_SECRET=... \
 //   SERVER_LOG=/ścieżka/do/server.log node tests/e2e/smoke.mjs
 // Przeglądarka: Chromium z przygotowanego środowiska (bez instalacji Playwright).
 import { createRequire } from "node:module";
@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const OTPAuth = require("otpauth");
 
-const APP = process.env.APP_URL ?? "http://localhost:3000";
+const APP = process.env.APP_URL ?? "http://localhost:3001";
 const EMAIL = process.env.ADMIN_EMAIL;
 const PASSWORD = process.env.ADMIN_PASSWORD;
 const SECRET = process.env.ADMIN_TOTP_SECRET;
@@ -79,7 +79,7 @@ try {
   // 4. Link z e-maila (w trybie log e-mail trafia do logu serwera).
   await new Promise((r) => setTimeout(r, 500));
   const log = LOG ? readFileSync(LOG, "utf8") : "";
-  const link = [...log.matchAll(/http:\/\/localhost:3000\/zgloszenie\/[A-Za-z0-9_-]+/g)].at(-1)?.[0];
+  const link = [...log.matchAll(/http:\/\/localhost:3001\/zgloszenie\/[A-Za-z0-9_-]+/g)].at(-1)?.[0];
   check(!!link, "link z e-maila znaleziony w logu poczty");
   await page.goto(link);
   await page.click('button:has-text("Potwierdzam adres e-mail")');

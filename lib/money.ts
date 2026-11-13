@@ -1,4 +1,4 @@
-// Kwoty przechowujemy w groszach (Int), jak w całym systemie zapisy.roboplanet.pl.
+// Kwoty przechowujemy w groszach (Int), żeby uniknąć błędów zaokrągleń przy złotych.
 
 const nf = new Intl.NumberFormat("pl-PL", { style: "currency", currency: "PLN" });
 

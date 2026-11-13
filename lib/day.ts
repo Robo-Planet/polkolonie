@@ -1,4 +1,4 @@
-// Daty turnusów są zapisywane jako północ UTC (wzorzec z zapisy.roboplanet.pl).
+// Daty turnusów są zapisywane jako północ UTC (lib/day.ts jest jedyną kopią tej logiki w projekcie).
 // Dzięki temu "1 lutego 2027" to zawsze 2027-02-01T00:00:00Z, niezależnie od strefy serwera.
 
 const DAY_MS = 24 * 60 * 60 * 1000;

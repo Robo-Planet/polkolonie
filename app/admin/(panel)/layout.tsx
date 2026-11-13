@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/admin";
-import { logoutAdmin } from "@/app/admin/login/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +15,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         </nav>
         <div className="who">
           <span>{admin.email}</span>
-          <form action={logoutAdmin}>
+          <form action="/admin/logout" method="post">
             <button type="submit" className="secondary">Wyloguj</button>
           </form>
         </div>

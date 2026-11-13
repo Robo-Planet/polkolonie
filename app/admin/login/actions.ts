@@ -1,12 +1,12 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { decryptField } from "@/lib/crypto";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import type { FormState } from "@/lib/form-state";
+import { cookies } from "next/headers";
 import { SESSION_COOKIE, SESSION_MAX_AGE_S, signSession } from "@/lib/session";
 import { verifyTotp } from "@/lib/totp";
 import { clearThrottle, registerAttempt, RULES, throttledUntil } from "@/lib/throttle";
@@ -51,10 +51,4 @@ export async function loginAdmin(_prev: FormState, formData: FormData): Promise<
     maxAge: SESSION_MAX_AGE_S,
   });
   redirect("/admin");
-}
-
-export async function logoutAdmin(): Promise<void> {
-  const jar = await cookies();
-  jar.delete(SESSION_COOKIE);
-  redirect("/admin/login");
 }
