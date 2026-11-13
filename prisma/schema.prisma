@@ -79,6 +79,29 @@ model Application {
   returningParticipant Boolean           @default(false) // uczestnik zajęć / poprzednich edycji
   rodoConsentAt        DateTime
 
+  // Pełny formularz (etap 2). Dane wrażliwe (PESEL, zdrowie, osoby do odbioru) szyfrowane.
+  childLastName        String?
+  secondParentName     String?
+  parentPhoneAlt       String?
+  parentAddress        String?
+  parentPostalCode     String?
+  parentCity           String?
+  childSameAddress     Boolean           @default(false)
+  childAddress         String?
+  childPostalCode      String?
+  childCity            String?
+  birthDate            DateTime?         @db.Date // z PESEL (jawna, do ubezpieczenia)
+  peselEnc             String?           // PESEL, zaszyfrowany
+  healthEnc            String?           // JSON: zdrowie i osoby do odbioru, zaszyfrowany
+  selfReturn           Boolean?          // zgoda na samodzielny powrót
+  pickupTime           String?           // godzina przyprowadzania i odbioru
+  photoConsent         Boolean           @default(false)
+  marketingPhotoConsent Boolean          @default(false)
+  regulaminAcceptedAt  DateTime?
+  healthConsentAt      DateTime?
+  draftSavedAt         DateTime?
+  formSubmittedAt      DateTime?
+
   // Potwierdzenie adresu e-mail (kliknięcie linku)
   emailConfirmedAt     DateTime?
 

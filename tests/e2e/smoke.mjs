@@ -72,7 +72,9 @@ try {
   check((await row.textContent()).includes("0 / 20"), `turnus ${TURNUS} widoczny w panelu z 0/20 miejsc`);
 
   // 3. Krótkie zgłoszenie na stronie publicznej.
-  const parent = await browser.newContext();
+  // Każdy przebieg to inny adres klienta (dławienie zgłoszeń liczy po IP z X-Forwarded-For).
+  const clientIp = `10.0.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250) + 1}`;
+  const parent = await browser.newContext({ extraHTTPHeaders: { "x-forwarded-for": clientIp } });
   const page = await parent.newPage();
   await page.goto(`${APP}/zapis`);
   const optionText = await page.locator('select[name="turnusId"] option', { hasText: `Turnus ${TURNUS}:` }).textContent();
@@ -101,6 +103,25 @@ try {
   await page.waitForSelector("text=Adres e-mail potwierdzony");
   check(true, "kliknięcie linku potwierdza adres e-mail");
 
+  // 4b. Pełny formularz: szkic, potem wysłanie (dziecko 6-letnie, PESEL 20231512341 – 2020-03-15).
+  await page.goto(`${link}/formularz`);
+  await page.fill('input[name="childLastName"]', "Testowy");
+  await page.fill('input[name="pesel"]', "20231512341");
+  await page.fill('input[name="parentAddress"]', "ul. Testowa 1");
+  await page.fill('input[name="parentPostalCode"]', "80-288");
+  await page.fill('input[name="parentCity"]', "Gdańsk");
+  await page.check('input[name="childSameAddress"]');
+  await page.selectOption('select[name="selfReturn"]', "nie");
+  await page.fill('input[name="pickupTime"]', "16:30");
+  await page.check('input[name="regulaminAccepted"]');
+  await page.check('input[name="healthConsent"]');
+  await page.click('button[value="draft"]');
+  await page.waitForSelector("text=Szkic zapisany");
+  check(true, "szkic formularza zapisany");
+  await page.click('button[value="submit"]');
+  await page.waitForSelector("text=Formularz wysłany");
+  check(true, "pełny formularz wysłany (walidacja wieku i zgód przeszła)");
+
   // 5. Zgłoszenie widoczne w panelu i w dzienniku.
   await admin.goto(`${APP}/admin`);
   await admin.click(`a:has-text("${TURNUS}")`);
@@ -111,9 +132,12 @@ try {
   check(true, "dziennik zdarzeń zawiera potwierdzenie e-maila");
   await admin.waitForSelector("text=application.created");
   check(true, "dziennik zdarzeń zawiera utworzenie zgłoszenia");
+  await admin.waitForSelector("text=form.submitted");
+  check(true, "dziennik zdarzeń zawiera wysłanie formularza");
 
   // 6. Pułapka na boty: wypełnione ukryte pole nie tworzy zgłoszenia.
-  const botPage = await browser.newPage();
+  const botCtx = await browser.newContext({ extraHTTPHeaders: { "x-forwarded-for": clientIp } });
+  const botPage = await botCtx.newPage();
   await botPage.goto(`${APP}/zapis`);
   await botPage.selectOption('select[name="turnusId"]', await turnusValue(botPage));
   await botPage.$eval('input[name="website"]', (el) => (el.value = "spam"));

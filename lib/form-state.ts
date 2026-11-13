@@ -1,6 +1,8 @@
 // Wspólny kształt stanu formularzy (useActionState). Wartości wracają do formularza po błędzie.
 export type FormState = {
   ok?: boolean;
+  /** true, gdy formularz został wysłany (nie tylko zapisany jako szkic) */
+  submitted?: boolean;
   error?: string;
   fieldErrors?: Record<string, string>;
   values?: Record<string, string>;

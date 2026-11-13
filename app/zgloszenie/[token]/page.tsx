@@ -50,6 +50,10 @@ export default async function ZgloszenieTokenPage({ params }: { params: Promise<
         <dd>{STATUS_LABEL[app.status]}</dd>
       </dl>
 
+      {app.emailConfirmedAt && !app.formSubmittedAt && (
+        <p><a className="button" href={`/zgloszenie/${token}/formularz`}>Uzupełnij pełny formularz</a></p>
+      )}
+
       {!app.emailConfirmedAt ? (
         <form action={confirmParentEmail} className="stack">
           <input type="hidden" name="token" value={token} />
