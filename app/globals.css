@@ -1,0 +1,39 @@
+:root { color-scheme: light; --ink: #1d2433; --muted: #5b6475; --line: #d7dce5; --accent: #1f5fbf; --ok: #1e7a3c; --bad: #b42318; --bg: #f6f7fa; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.5; }
+h1 { font-size: 1.6rem; margin: 0.4rem 0 1rem; }
+h2 { font-size: 1.2rem; margin: 1.6rem 0 0.6rem; }
+.page { max-width: 760px; margin: 2rem auto; padding: 1.5rem; background: #fff; border-radius: 10px; border: 1px solid var(--line); }
+.page.narrow { max-width: 420px; }
+.page.wide { max-width: 1100px; margin: 1.5rem auto; }
+.lead { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 0.9rem; }
+.row { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+.row > label { flex: 1 1 200px; }
+label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 500; }
+label.checkbox { flex-direction: row; align-items: flex-start; gap: 0.5rem; font-weight: 400; }
+input, select { font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+input[type="checkbox"] { margin-top: 0.3rem; }
+button, .button { font: inherit; padding: 0.6rem 1rem; border: 0; border-radius: 6px; background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; align-self: flex-start; }
+button:disabled { opacity: 0.6; cursor: wait; }
+button.secondary { background: #e7ebf2; color: var(--ink); }
+.notice { padding: 0.8rem 1rem; border-radius: 8px; }
+.notice.error { background: #fdecea; color: var(--bad); }
+.notice.success { background: #e8f5ec; color: var(--ok); }
+.field-error { color: var(--bad); font-size: 0.85rem; font-weight: 400; }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.turnusy { padding-left: 1.1rem; }
+.summary { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1.2rem; }
+.summary dt { color: var(--muted); }
+.summary dd { margin: 0; }
+.events { padding-left: 1.2rem; font-size: 0.92rem; }
+.panel-header { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 1.5rem; background: #fff; border-bottom: 1px solid var(--line); }
+.panel-header nav { display: flex; gap: 1.2rem; }
+.panel-header nav a { color: var(--accent); text-decoration: none; font-weight: 500; }
+.panel-header .who { display: flex; gap: 0.8rem; align-items: center; color: var(--muted); font-size: 0.9rem; }
+.panel-header .who form { margin: 0; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--line); font-size: 0.93rem; vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+a { color: var(--accent); }

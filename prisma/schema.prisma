@@ -1,0 +1,138 @@
+// Schemat bazy półkolonii RoboPlanet (wg specyfikacji, sekcja "Model danych").
+// Etap 1 (Fundament): Organizer, Turnus, Application, Event, AdminUser, Counter, RateLimit.
+// Modele Charge, BankTransaction, Allocation, Document, Signature dojdą w etapach 2–3.
+//
+// Konwencje: kwoty w groszach (Int), daty turnusu jako DATE (północ UTC),
+// znaczniki czasu jako DateTime (UTC), identyfikatory cuid.
+
+generator client {
+  provider   = "prisma-client"
+  output     = "../lib/generated/prisma"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ApplicationStatus {
+  ZGLOSZONE       // krótkie zgłoszenie (formularz na stronie)
+  UMOWA_ZAWARTA   // umowa zawarta (czeka na zaliczkę)
+  MIEJSCE         // ma miejsce (po wpłaceniu zaliczki)
+  KWALIFIKACJA    // karta przyjęta przez biuro
+  OPLACONE        // dopłata wpłacona
+  ODMOWA          // odmowa kwalifikacji (zwrot wpłat)
+  WYGASLA         // wygasła (brak zaliczki / decyzja biura)
+  REZERWA         // lista rezerwowa (brak miejsc)
+}
+
+// Organizator – jeden rekord (id = 1).
+model Organizer {
+  id          Int      @id @default(1)
+  name        String   // ROBOPLANET EVENTS S.C.
+  nip         String
+  street      String
+  postalCode  String   // NN-NNN
+  city        String
+  bankName    String   // Erste
+  bankAccount String   // numer konta do przelewów
+  updatedAt   DateTime @updatedAt
+}
+
+model Turnus {
+  id           String   @id @default(cuid())
+  number       String   // "I", "II", ...
+  season       String   // kod sezonu, np. "Z27" (ferie zimowe 2027)
+  startDate    DateTime @db.Date // pierwszy dzień, północ UTC
+  endDate      DateTime @db.Date // ostatni dzień, północ UTC
+  hoursFrom    String   // "07:45"
+  hoursTo      String   // "16:30"
+  venue        String   // adres miejsca wypoczynku
+  placeLimit   Int      // limit miejsc
+  minAge       Int      @default(5)
+  priceGrosze  Int      // cena turnusu w groszach
+  depositGrosze Int     @default(20000) // zaliczka 200 zł
+  discountGrosze Int    @default(5000)  // zniżka stałego uczestnika 50 zł
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  applications Application[]
+
+  @@unique([season, number])
+}
+
+model Application {
+  id                   String            @id @default(cuid())
+  code                 String            @unique // np. RP-Z27-0142
+  turnusId             String
+  turnus               Turnus            @relation(fields: [turnusId], references: [id])
+  status               ApplicationStatus @default(ZGLOSZONE)
+  statusChangedAt      DateTime          @default(now())
+
+  // Krótkie zgłoszenie
+  parentFirstName      String
+  parentLastName       String
+  parentEmail          String
+  parentPhone          String
+  childFirstName       String
+  returningParticipant Boolean           @default(false) // uczestnik zajęć / poprzednich edycji
+  rodoConsentAt        DateTime
+
+  // Potwierdzenie adresu e-mail (kliknięcie linku)
+  emailConfirmedAt     DateTime?
+
+  // Link do pełnego formularza: w bazie tylko skrót tokenu
+  linkTokenHash        String            @unique
+  linkExpiresAt        DateTime
+
+  // Kwoty i lista rezerwowa
+  discountGrosze       Int               @default(0)
+  waitlistPosition     Int?
+
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  events               Event[]
+
+  @@index([turnusId, status])
+}
+
+// Dziennik zdarzeń: każda zmiana zgłoszenia lub konfiguracji.
+model Event {
+  id            String       @id @default(cuid())
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id])
+  actor         String       // "system", "rodzic" albo e-mail administratora
+  action        String       // np. "application.created"
+  before        Json?
+  after         Json?
+  note          String?
+  createdAt     DateTime     @default(now())
+
+  @@index([applicationId, createdAt])
+}
+
+// Jedno konto administratora (bez innych ról).
+model AdminUser {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String    // bcrypt
+  totpSecretEnc   String    // sekret TOTP, zaszyfrowany kluczem aplikacji
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Licznik numeracji kodów zgłoszeń (atomowy inkrement).
+model Counter {
+  key   String @id
+  value Int    @default(0)
+}
+
+// Dławienie prób (logowanie, formularze publiczne): okno czasowe i liczba prób.
+model RateLimit {
+  key         String   @id // np. "login:email:..." (skrót)
+  count       Int      @default(0)
+  windowStart DateTime @default(now())
+  blockedUntil DateTime?
+}
