@@ -1,0 +1,360 @@
+ARC-Seal: i=1; cv=none; a=rsa-sha256; d=roboplanet.pl; s=default;
+ t=1794571331;
+ b=u/myZo42uhRiZM/kSuu1/MBcum0lVrPevuriiMaNKFXJDxl9iIJ247OowRHxhderM4d4o
+ XT7pGJUlV7O3FsP1Hr/7mgPL1iol7xV6vUHGyeLpXm2qqhc4PV/YFfBWviStJ3qM0qgeq0Z
+ weCA3+S/CwzyiJrX2SuXdpLvy7teiuzDw7Twc1QAv57oZ5S5QS63pDjTFKHmVZFlPCvVJWz
+ cAgrEL15mPQ0UFmcSQ417btZwMvjJjH+pEtUCctjvr1zjubAkOhXxU2K/zrxCA5CRkKonrQ
+ XOJJq94S62yseoQbMT0cKNCrlnSDM7C8U12AsTHqzi//cOdrlG7oZSDwWB7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=roboplanet.pl; s=default; t=1794571331; h=date : to : from :
+ message-id : subject : content-type : from;
+ bh=DSNgzr7Lm8gHh9CLvQVb14oQMdSF14N6EC+nWvILEeU=;
+ b=odA/Hq+5cvHr/CK32h7bU+0Zg5tIoMJJqqTK7NgvJy5cyBqZ95kmxkqVRNa7JtJUBVtvI
+ PLcEaVves2jaUtSKI5nl6ihSWMv/PBgTGjK1ihwO3dkBVocz3+1yD/JhhbIgpAoJ9EgC+9a
+ ke19Qr0RfbMJHNgcHR7NKSkHcHourrRbY3OfWAAsx4J/DTe47iEIXtW4NvnNvkfyqhMY/O+
+ YQ1ZFl/Jl4xXcm1LAORwjCRKCvG2ni8iudEqdq8/W1J7VeRtyrBeqmpm84lwKcbdxoxB26j
+ wT1C6QWtG5avdFVcotAvyKo+fxL4vPJTpkQKINHzmOpQUzlD3hfouWzkDQuQ==
+ARC-Authentication-Results: i=1; pl-225-101.rgb365.eu;
+  dmarc=pass smtp.from=erste.pl header.from=erste.pl;
+  dkim=pass header.d=erste.pl;
+  spf=pass smtp.mailfrom=prvs=770b4a47d=alerty24@erste.pl smtp.helo=mta9.centrum24.pl
+Return-Path: <prvs=770b4a47d=alerty24@erste.pl>
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on pl-225-101.rgb365.eu
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.1 required=7.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,DKIM_VALID_EF,HTML_FONT_LOW_CONTRAST,HTML_MESSAGE,
+	INVALID_MSGID,MIME_HEADER_CTYPE_ONLY,MIME_HTML_ONLY,NUMERIC_HTTP_ADDR,
+	RCVD_IN_DNSWL_MED,RCVD_IN_ZEN_BLOCKED,SPF_HELO_NONE,SPF_NONE,
+	URIBL_DBL_BLOCKED,URIBL_ZEN_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Original-To: wplaty@roboplanet.pl
+Delivered-To: wplaty@roboplanet.pl
+Received: from mta9.centrum24.pl (mta9.centrum24.pl [195.234.141.209])
+	by mail-226-101.rgb365.eu (Postfix) with ESMTPS id 0DF5366B9BB7
+	for <wplaty@roboplanet.pl>; Fri, 13 Nov 2026 13:02:09 +0100 (CET)
+Authentication-Results: pl-225-101.rgb365.eu;
+	dmarc=pass (p=REJECT sp=REJECT) smtp.from=erste.pl header.from=erste.pl;
+	dkim=pass header.d=erste.pl;
+        spf=pass (sender IP is 195.234.141.209) smtp.mailfrom=prvs=770b4a47d=alerty24@erste.pl smtp.helo=mta9.centrum24.pl
+Received-SPF: pass (pl-225-101.rgb365.eu: domain of erste.pl designates 195.234.141.209 as permitted sender) client-ip=195.234.141.209; envelope-from=prvs=770b4a47d=alerty24@erste.pl; helo=mta9.centrum24.pl;
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=erste.pl; i=@erste.pl; q=dns/txt; s=protectpl2;
+  t=1794571330; x=1826107330;
+  h=date:to:from:message-id:subject;
+  bh=O52VKivCgKPts5a2BFQ4zH3FNI8KrEUwDUNL47K3QqI=;
+  b=MIVFMIPu9aE3UOJ0c42AySCVl81NyGDDoK4mp9FKgeY8HpbxlOlicP7Q
+   rd1uktVszrXguaf0aq7qVb1c1/oH8+aoWLP4CAntocUsmLmX+dsRXCsbd
+   N0urDqz+M5P7+zTeJ93tXvzETLpwHPIPu7pX8Y36HjKVu7aC7vQ68OBCW
+   ECFTrlQqKovqZNFnl6bHq2DaP95tYvky0m5mFCy/SFak0YLoiON5CA1MH
+   3ju7czbOlO1csAEsMg/1d54HMVCEQVQhWqVsX4Lx7OOhid4Xk+fw5Clp/
+   +6lyXaRf7W28OrUCNsE/9bQuqTp+amElScsyuRIuZTrCJ0qF/Ou9zbLJP
+   g==;
+X-CSE-ConnectionGUID: ZUUIWPzySFuRmhk1/O/9gw==
+X-CSE-MsgGUID: ZpweLujORzSFG7qvU4dsNw==
+Received: from unknown (HELO mail-pfx.centrum24.pl) ([10.19.71.10])
+  by mta9.centrum24.pl with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 13:02:10 +0100
+Received: from s2sl00001707.centrala.bzwbk (localhost [127.0.0.1])
+	by mail-pfx.centrum24.pl (Postfix) with ESMTP id 6CA17408109
+	for <wplaty@roboplanet.pl>; Fri, 13 Nov 2026 13:02:09 +0100 (CET)
+Received: from pcekecent (p_ceke.centrala.bzwbk [10.50.18.32])
+	by mail-pfx.centrum24.pl (Postfix) with ESMTP id 5F660407DD4
+	for <wplaty@roboplanet.pl>; Fri, 13 Nov 2026 13:02:09 +0100 (CET)
+Date: Fri, 13 Nov 2026 13:02:09 +0100
+To: <wplaty@roboplanet.pl>
+From: Alerty24 <alerty24@erste.pl>
+Message-ID: <b7047f5-778-2fd8-281b-6676717bd6>
+Subject: Alerty24: Wpływ na konto
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" style="background: #f3f3f3 !important;">
+      <head>
+        <link rel="stylesheet" type="text/css" href="../css/app.css">
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-2">
+        <meta name="viewport" content="width=device-width">
+        <style>@media only screen {
+  html {
+    min-height: 100%;
+    background: #f3f3f3;
+  }
+}
+
+@media only screen and (max-width: 830px) {
+  table.body table.container .show-for-large {
+    display: none !important;
+    width: 0;
+    mso-hide: all;
+    overflow: hidden;
+  }
+}
+
+@media only screen and (max-width: 830px) {
+  table.body img {
+    width: auto;
+    height: auto;
+  }
+
+  table.body center {
+    min-width: 0 !important;
+  }
+
+  table.body .container {
+    width: 100% !important;
+  }
+
+  table.body .columns {
+    height: auto !important;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+  }
+
+  table.body .columns .columns {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  th.small-1 {
+    display: inline-block !important;
+    width: 6.25% !important;
+  }
+
+  th.small-2 {
+    display: inline-block !important;
+    width: 12.5% !important;
+  }
+
+  th.small-3 {
+    display: inline-block !important;
+    width: 18.75% !important;
+  }
+
+  th.small-6 {
+    display: inline-block !important;
+    width: 37.5% !important;
+  }
+
+  th.small-9 {
+    display: inline-block !important;
+    width: 56.25% !important;
+  }
+
+  th.small-10 {
+    display: inline-block !important;
+    width: 62.5% !important;
+  }
+
+  th.small-12 {
+    display: inline-block !important;
+    width: 75% !important;
+  }
+
+  th.small-14 {
+    display: inline-block !important;
+    width: 87.5% !important;
+  }
+
+  th.small-16 {
+    display: inline-block !important;
+    width: 100% !important;
+  }
+}
+
+@media screen {
+  p,
+  li {
+    font-family: 'Open Sans', Arial, sans-serif !important;
+  }
+}</style>
+      </head>
+      <body style="-moz-box-sizing: border-box; -ms-text-size-adjust: 100%; -webkit-box-sizing: border-box; -webkit-text-size-adjust: 100%; Margin: 0; background: #f3f3f3 !important; box-sizing: border-box; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; min-width: 100%; padding: 0; text-align: left; width: 100% !important;">
+        <span class="preheader" style="color: #f3f3f3; display: none !important; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; mso-hide: all !important; opacity: 0; overflow: hidden; visibility: hidden;">Erste Bank Polska S.A.</span>
+        <table class="body" style="Margin: 0; background: #f3f3f3 !important; border-collapse: collapse; border-spacing: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; height: 100%; line-height: 1.71; margin: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+          <tr style="padding: 0; text-align: left; vertical-align: top;">
+            <td class="center" align="center" valign="top" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; hyphens: auto; line-height: 1.71; margin: 0; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;">
+              <center data-parsed style="min-width: 800px; width: 100%;">
+                  <table align="center" class="container float-center" style="Margin: 0 auto; background: #ffffff; border-collapse: collapse; border-spacing: 0; float: none; margin: 0 auto; margin-left: 0 !important; margin-right: 0 !important; padding: 0; text-align: center; vertical-align: top; width: 800px;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<td style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; hyphens: auto; line-height: 1.71; margin: 0; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;">
+    				<table class="spacer" style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<td height="30pxpx" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 30pxpx; font-weight: normal; hyphens: auto; line-height: 30pxpx; margin: 0; mso-line-height-rule: exactly; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;">&#xA0;</td></tr></tbody></table> 
+    				<table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+    				  <th class="small-16 large-14 columns first last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 30px; padding-right: 30px; text-align: left; width: 670px;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+    				    <h2 style="Margin: 0; Margin-bottom: 0px; color: #135EE2; font-family: Arial, sans-serif; font-size: 30px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 90px; padding: 0; text-align: left; word-wrap: normal;">
+    				      <img src="https://www.erste.pl/_fileserver/item/1509494" alt="Erste Bank Polska S.A." style="-ms-interpolation-mode: bicubic; clear: both; display: block; max-width: 100%; outline: none; text-decoration: none; width: auto;">
+    				    </h2>
+    				  </th></tr></table></th>
+    				</tr></tbody></table>
+                    <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+                      <th class="small-16 large-16 columns first last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 30px; padding-right: 30px; text-align: left; width: 770px;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">    <h6 style="Margin: 0; Margin-bottom: 0px; color: inherit; font-family: Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left; word-wrap: normal;">Na Twoje konto wpłynęło 1,00 PLN od ROBOPLANET SPÓŁKA CYWILNA.</h6> 
+    <br>
+    <hr style="border-color: #EEF4FE; border-style: solid;">
+    <br>
+    <p style="Margin: 0; Margin-bottom: 0px; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left;">
+      Szczegóły przelewu:
+    </p>
+    <br>   
+    <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+        <th class="show-for-large small-0 large-1 columns first" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 6.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;"></th></tr></table></th>
+        <th class="small-6 large-3 columns" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 18.75%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <p class="alternative-text" style="Margin: 0; Margin-bottom: 0px; color: #6f7779; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left; word-break: break-word;">
+            Tytuł:
+            </p>
+        </th></tr></table></th>
+        <th class="small-10 large-13 columns last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 81.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <b>
+            przelew
+            </b>
+        </th></tr></table></th>
+    </tr></tbody></table>  <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+        <th class="show-for-large small-0 large-1 columns first" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 6.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;"></th></tr></table></th>
+        <th class="small-6 large-3 columns" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 18.75%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <p class="alternative-text" style="Margin: 0; Margin-bottom: 0px; color: #6f7779; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left; word-break: break-word;">
+            Od kogo:
+            </p>
+        </th></tr></table></th>
+        <th class="small-10 large-13 columns last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 81.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <b>
+            ROBOPLANET SPÓŁKA CYWILNA
+            </b>
+        </th></tr></table></th>
+    </tr></tbody></table>  <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+        <th class="show-for-large small-0 large-1 columns first" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 6.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;"></th></tr></table></th>
+        <th class="small-6 large-3 columns" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 18.75%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <p class="alternative-text" style="Margin: 0; Margin-bottom: 0px; color: #6f7779; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left; word-break: break-word;">
+            Ile:
+            </p>
+        </th></tr></table></th>
+        <th class="small-10 large-13 columns last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 81.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <b>
+            1,00 PLN
+            </b>
+        </th></tr></table></th>
+    </tr></tbody></table>  <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+        <th class="show-for-large small-0 large-1 columns first" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 6.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;"></th></tr></table></th>
+        <th class="small-6 large-3 columns" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 18.75%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <p class="alternative-text" style="Margin: 0; Margin-bottom: 0px; color: #6f7779; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left; word-break: break-word;">
+            Na konto:
+            </p>
+        </th></tr></table></th>
+        <th class="small-10 large-13 columns last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 81.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <b>
+            50 1090 2587 0000 0001 6509 0761
+            </b>
+        </th></tr></table></th>
+    </tr></tbody></table>  <br>
+    <p style="Margin: 0; Margin-bottom: 0px; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left;">Stan konta po przelewie:</p>
+    <br>
+    <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+        <th class="show-for-large small-0 large-1 columns first" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 6.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;"></th></tr></table></th>
+        <th class="small-6 large-3 columns" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 18.75%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <p class="alternative-text" style="Margin: 0; Margin-bottom: 0px; color: #6f7779; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left; word-break: break-word;">
+            Saldo:
+            </p>
+        </th></tr></table></th>
+        <th class="small-10 large-13 columns last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 81.25%;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+            <b>
+            0,00 PLN
+            </b>
+        </th></tr></table></th>
+    </tr></tbody></table>  <br>                                    </th></tr></table></th>
+                                </tr></tbody></table>
+                                    <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+                                      <th class="small-12 large-12 columns first last" style="Margin: 0 auto; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 30px; padding-left: 30px; padding-right: 30px; text-align: left; width: 570px;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;"></th>
+<th class="expander" style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table></th>
+                                    </tr></tbody></table>
+                                    <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody>
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+                                      <th class="footer small-16 large-16 columns first last" style="Margin: 0 auto; background-color: #EEF4FE; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0 auto; padding: 0; padding-bottom: 0px; padding-left: 30px; padding-right: 30px; padding-top: 30px; text-align: left; width: 770px;">
+<table role="Presentation"  style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+<tr style="padding: 0; text-align: left; vertical-align: top;">
+<th style="Margin: 0; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; padding: 0; text-align: left;">
+                                        <p style="Margin: 0; Margin-bottom: 0px; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left;">
+                                          Telefony kontaktowe: <b>1 9999*</b> lub +48 61 81 19999* (dzwoniąc z zagranicy)
+                                        </p>
+                                        <p class="footer-smaller" style="Margin: 0; Margin-bottom: 0px; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 0px; padding: 0; text-align: left;">
+                                          *opłata za minutę zgodnie z taryfą danego operatora
+                                        </p>
+                                        <br>
+                                        <p class="footer-smaller" style="Margin: 0; Margin-bottom: 0px; color: #0a0a0a; font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; line-height: 1.71; margin: 0; margin-bottom: 30px; padding: 0; text-align: left;">
+                                          Nadawcą tej wiadomości jest Erste Bank Polska S.A.<br>
+                                          Wiadomość została wygenerowana automatycznie i wysłana za zgodą odbiorcy - prosimy na nią nie odpowiadać.<br>
+                                          Identyfikator wiadomości: -1540367547 	
+                                        </p>
+                                      </th></tr></table></th>
+                                    </tr></tbody></table>                                                    </td></tr></tbody></table>
+                        </center>
+                    </td>
+                </tr>
+            </table>
+            <!-- prevent Gmail on iOS font size manipulation -->
+            <div style="display:none; white-space:nowrap; font:15px arial; line-height:0;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
+        </body>
+    </html>
