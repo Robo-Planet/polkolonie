@@ -140,7 +140,7 @@ describe("schematy formularzy", () => {
     const turnus = {
       number: "I", season: "Z27", startDate: "2027-02-01", endDate: "2027-01-30",
       hoursFrom: "07:45", hoursTo: "16:30", venue: "ul. Marusarzówny 2/39, Gdańsk",
-      placeLimit: "20", minAge: "5", price: "920", deposit: "200", discount: "50", active: true,
+      placeLimit: "20", minAge: "6", price: "930", deposit: "200", discount: "50", active: true,
     };
     expect(schemaSafe(turnusSchema, turnus).ok).toBe(false);
     expect(schemaSafe(turnusSchema, { ...turnus, endDate: "2027-02-05" }).ok).toBe(true);
@@ -149,7 +149,7 @@ describe("schematy formularzy", () => {
     const turnus = {
       number: "I", season: "Z27", startDate: "2027-02-01", endDate: "2027-02-05",
       hoursFrom: "07:45", hoursTo: "16:30", venue: "ul. Marusarzówny 2/39, Gdańsk",
-      placeLimit: 20, minAge: 4, price: "920", deposit: "200", discount: "50", active: true,
+      placeLimit: 20, minAge: 5, price: "930", deposit: "200", discount: "50", active: true,
     };
     expect(schemaSafe(turnusSchema, turnus).ok).toBe(false);
   });

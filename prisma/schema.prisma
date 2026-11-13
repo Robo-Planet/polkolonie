@@ -49,7 +49,7 @@ model Turnus {
   hoursTo      String   // "16:30"
   venue        String   // adres miejsca wypoczynku
   placeLimit   Int      // limit miejsc
-  minAge       Int      @default(5)
+  minAge       Int      @default(6)
   priceGrosze  Int      // cena turnusu w groszach
   depositGrosze Int     @default(20000) // zaliczka 200 zł
   discountGrosze Int    @default(5000)  // zniżka stałego uczestnika 50 zł

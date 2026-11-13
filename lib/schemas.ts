@@ -43,7 +43,7 @@ export const turnusSchema = z
     hoursTo: z.string().refine(isValidTime, "Godzina do: HH:MM"),
     venue: z.string().trim().min(5, "Miejsce wypoczynku: podaj adres").max(200),
     placeLimit: z.coerce.number({ error: "Limit miejsc: liczba" }).int().min(1).max(500),
-    minAge: z.coerce.number().int().min(5, "Minimalny wiek to co najmniej 5 lat").max(18).default(5),
+    minAge: z.coerce.number().int().min(6, "Minimalny wiek to co najmniej 6 lat").max(18).default(6),
     price: z.string().trim().min(1, "Cena: wymagana"),
     deposit: z.string().trim().min(1, "Zaliczka: wymagana"),
     discount: z.string().trim().min(1, "Zniżka: wymagana"),

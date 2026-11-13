@@ -45,7 +45,7 @@ function parseTurnusForm(formData: FormData): ParseResult {
     hoursTo: values.hoursTo ?? "",
     venue: values.venue ?? "",
     placeLimit: values.placeLimit ?? "",
-    minAge: values.minAge ?? "5",
+    minAge: values.minAge ?? "6",
     price: values.price ?? "",
     deposit: values.deposit ?? "",
     discount: values.discount ?? "",

@@ -32,7 +32,7 @@ export function TurnusForm({ action, defaults }: { action: Action; defaults: Rec
       <label>Miejsce wypoczynku (adres)<input name="venue" defaultValue={v.venue} required />{field("venue")}</label>
       <div className="row">
         <label>Limit miejsc<input name="placeLimit" type="number" min={1} defaultValue={v.placeLimit} required />{field("placeLimit")}</label>
-        <label>Minimalny wiek<input name="minAge" type="number" min={5} defaultValue={v.minAge ?? "5"} required />{field("minAge")}</label>
+        <label>Minimalny wiek<input name="minAge" type="number" min={6} defaultValue={v.minAge ?? "6"} required />{field("minAge")}</label>
       </div>
       <div className="row">
         <label>Cena (zł)<input name="price" inputMode="decimal" defaultValue={v.price} required />{field("price")}</label>
