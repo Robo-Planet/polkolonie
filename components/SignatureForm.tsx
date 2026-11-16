@@ -93,6 +93,10 @@ export function SignatureForm({
           <button type="button" className="secondary" onClick={clear}>Wyczyść podpis</button>
         </div>
         <input ref={signatureRef} type="hidden" name="signature" />
+        <label className="checkbox">
+          <input name="summaryAck" type="checkbox" defaultChecked={signState.values?.summaryAck === "on"} />
+          Zapoznałem/-am się z podsumowaniem, treścią umowy i karty kwalifikacyjnej.
+        </label>
         <label>
           Kod z e-maila (6 cyfr)
           <input name="code" inputMode="numeric" maxLength={6} autoComplete="one-time-code" defaultValue={signState.values?.code ?? ""} required />

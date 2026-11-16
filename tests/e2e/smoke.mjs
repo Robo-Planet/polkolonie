@@ -138,19 +138,25 @@ try {
   const logAfterCode = LOG ? readFileSync(LOG, "utf8") : "";
   const signCode = [...logAfterCode.matchAll(new RegExp(`za zgłoszenie ${code}: (\\d{6})`, "g"))].at(-1)?.[1];
   check(!!signCode, `kod podpisu z e-maila (${signCode})`);
+  await page.waitForLoadState("networkidle");
   const pad = page.locator("canvas.signpad");
+  await pad.scrollIntoViewIfNeeded();
   const box = await pad.boundingBox();
   await page.mouse.move(box.x + 20, box.y + 90);
   await page.mouse.down();
   await page.mouse.move(box.x + 120, box.y + 40, { steps: 12 });
   await page.mouse.move(box.x + 220, box.y + 110, { steps: 12 });
   await page.mouse.up();
+  await page.waitForSelector("text=Podsumowanie przed podpisem");
+  await page.check('input[name="summaryAck"]');
   await page.fill('input[name="code"]', signCode);
   await page.click('button:has-text("Podpisuję umowę")');
   await page.waitForSelector("text=Umowa została zawarta");
   check(true, "umowa podpisana na ekranie (kod + rysunek podpisu)");
   const signed = await page.request.get(`${link}/umowa-podpisana`);
   check(signed.status() === 200 && (signed.headers()["content-type"] ?? "").includes("application/pdf"), "podpisana umowa (PDF) dostępna dla rodzica");
+  const signedKarta = await page.request.get(`${link}/karta-podpisana`);
+  check(signedKarta.status() === 200, "podpisana karta (PDF) dostępna dla rodzica");
 
   // 5. Zgłoszenie widoczne w panelu i w dzienniku.
   await admin.goto(`${APP}/admin`);

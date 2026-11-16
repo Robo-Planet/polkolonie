@@ -131,7 +131,7 @@ async function loadFont(doc: PDFDocument, file: string) {
 }
 
 /** Buduje PDF karty (części I–III). Zwraca bajty PDF. */
-export async function buildKartaPdf(data: KartaData): Promise<Uint8Array> {
+export async function buildKartaPdf(data: KartaData, opts: { signaturePng?: Uint8Array } = {}): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   const font = await loadFont(doc, "DejaVuSans.ttf");
   const bold = await loadFont(doc, "DejaVuSans-Bold.ttf");
@@ -169,9 +169,16 @@ export async function buildKartaPdf(data: KartaData): Promise<Uint8Array> {
   c.field("9. Istotne dane o stanie zdrowia, rozwoju psychofizycznym i stosowanej diecie", healthNarrative(data.health), { indent: 8 });
   c.field("Szczepienia ochronne (tężec, błonica, inne – z rokiem)", data.health.vaccinations, { indent: 8 });
   c.space(14);
+  const signatureSpot = { page: c.page, y: c.y }; // miejsce na podpis rodzica (nad linią)
   c.text("…………………………………… (data)                    ……………………………………………… (podpis rodziców / pełnoletniego uczestnika wypoczynku)", { size: 9 });
   c.space(6);
   c.rule();
+
+  if (opts.signaturePng) {
+    const img = await doc.embedPng(opts.signaturePng);
+    const scale = Math.min(150 / img.width, 40 / img.height);
+    signatureSpot.page.drawImage(img, { x: MARGIN + 300, y: signatureSpot.y - 40, width: img.width * scale, height: img.height * scale });
+  }
 
   c.text("III. Decyzja organizatora wypoczynku o zakwalifikowaniu uczestnika do udziału w wypoczynku", { bold: true, size: 11 });
   c.text("Postanawiam: [  ] zakwalifikować i skierować uczestnika na wypoczynek", { indent: 8 });

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { applicationByToken } from "@/lib/application-by-token";
-import { formatPlDate } from "@/lib/day";
+import { formatPlDate, todayUtc } from "@/lib/day";
+import { prisma } from "@/lib/db";
+import { buildSummary } from "@/lib/documents/summary";
 import { SignatureForm } from "@/components/SignatureForm";
 import { sendSignCode, signWithScreen } from "./actions";
 
@@ -20,6 +22,7 @@ export default async function PodpisPage({ params }: { params: Promise<{ token: 
         <h1>Umowa zawarta</h1>
         <p>Zgłoszenie {app.code} · zawarta {formatPlDate(app.contractSignedAt)}.</p>
         <p><a className="button" href={`/zgloszenie/${token}/umowa-podpisana`}>Pobierz podpisaną umowę (PDF)</a></p>
+        <p><a className="button secondary" href={`/zgloszenie/${token}/karta-podpisana`}>Pobierz podpisaną kartę (PDF)</a></p>
       </main>
     );
   }
@@ -33,9 +36,25 @@ export default async function PodpisPage({ params }: { params: Promise<{ token: 
     );
   }
 
+  const organizer = await prisma.organizer.findUniqueOrThrow({ where: { id: 1 } });
+  const summary = buildSummary({
+    priceGrosze: app.turnus.priceGrosze,
+    discountGrosze: app.turnus.discountGrosze,
+    returning: app.returningParticipant,
+    depositGrosze: app.turnus.depositGrosze,
+    startDate: app.turnus.startDate,
+    contractDate: todayUtc(),
+    turnusNumber: app.turnus.number,
+    organizer,
+  });
+
   return (
     <main className="page">
       <h1>Podpis umowy · {app.code}</h1>
+      <section className="summary-box">
+        <h2>{summary.heading}</h2>
+        <ul>{summary.items.map((item) => <li key={item}>{item}</li>)}</ul>
+      </section>
       <p className="lead">
         Przeczytaj umowę przed podpisem: <a href={`/zgloszenie/${token}/umowa`}>podgląd umowy (PDF)</a>.
         Podpis na ekranie wymaga kodu z e-maila. Dzień podpisu staje się datą zawarcia umowy.

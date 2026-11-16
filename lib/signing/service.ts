@@ -7,6 +7,8 @@ import { applicationByToken } from "@/lib/application-by-token";
 import { buildUmowaForApplication } from "@/lib/documents/umowa-build";
 import { UMOWA_TEMPLATE_VERSION } from "@/lib/documents/umowa-template";
 import { ensureCharges } from "@/lib/payments/service";
+import { buildKartaPdf } from "@/lib/pdf/karta";
+import { kartaDataFor } from "@/lib/pdf/karta-data";
 import { checkSignCode, hashSignCode, newSignCode, SIGN_CODE_TTL_MS } from "@/lib/signing/code";
 
 // Podpis na ekranie: kod e-mailem → rysunek podpisu → zawarcie umowy.
@@ -64,13 +66,14 @@ export async function requestSignCode(token: string): Promise<SignResult> {
 /** Potwierdza kodem i zawiera umowę z podpisem rodzica. */
 export async function signContract(
   token: string,
-  input: { code: string; signatureDataUrl: string; ip: string | null; userAgent: string | null },
+  input: { code: string; signatureDataUrl: string; summaryAck: boolean; ip: string | null; userAgent: string | null },
 ): Promise<SignResult> {
   const app = await applicationByToken(token);
   if (!app) return { ok: false, error: "Link jest nieaktywny. Skontaktuj się z biurem." };
   const problem = signable(app);
   if (problem) return { ok: false, error: problem };
 
+  if (!input.summaryAck) return { ok: false, error: "Potwierdź, że zapoznałeś się z podsumowaniem, umową i kartą." };
   const match = /^data:image\/png;base64,(.+)$/.exec(input.signatureDataUrl);
   if (!match) return { ok: false, error: "Złóż podpis na ekranie." };
   const png = Buffer.from(match[1], "base64");
@@ -99,6 +102,10 @@ export async function signContract(
   // Umowa z datą dzisiejszą i podpisem; ten sam PDF, który zobaczy rodzic.
   const pdf = Buffer.from(await buildUmowaForApplication(app.id, { date: now, png }));
   const sha = sha256Hex(pdf);
+  // Karta kwalifikacyjna z tym samym podpisem rodzica (część II).
+  const withTurnus = await prisma.application.findUniqueOrThrow({ where: { id: app.id }, include: { turnus: true } });
+  const karta = Buffer.from(await buildKartaPdf(kartaDataFor(withTurnus), { signaturePng: png }));
+  const kartaSha = sha256Hex(karta);
   const fresh = await prisma.application.findUniqueOrThrow({ where: { id: app.id } });
 
   await prisma.$transaction([
@@ -112,6 +119,7 @@ export async function signContract(
         userAgent: input.userAgent,
         codeConfirmedAt: now,
         pdfSha256: sha,
+        kartaSha256: kartaSha,
         signatureImageEnc: encryptField(png.toString("base64")),
         templateVersion: UMOWA_TEMPLATE_VERSION,
       },
@@ -119,11 +127,15 @@ export async function signContract(
     prisma.document.create({
       data: { applicationId: app.id, kind: "UMOWA_PODPISANA", templateVersion: UMOWA_TEMPLATE_VERSION, sha256: sha, bytes: pdf },
     }),
+    prisma.document.create({
+      data: { applicationId: app.id, kind: "KARTA_PODPISANA", templateVersion: 1, sha256: kartaSha, bytes: karta },
+    }),
     prisma.application.update({
       where: { id: app.id },
       data: {
         contractSignedAt: now,
         contractSignatureSha256: sha,
+        summaryAckAt: now,
         contractTemplateVersion: UMOWA_TEMPLATE_VERSION,
         status: fresh.status === "ZGLOSZONE" ? "UMOWA_ZAWARTA" : fresh.status,
         statusChangedAt: now,

@@ -109,6 +109,7 @@ model Application {
   formSubmittedAt      DateTime?
   contractSignedAt     DateTime?         // data zawarcia umowy (podpis)
   contractSignatureSha256 String?        // SHA-256 podpisanej umowy
+  summaryAckAt         DateTime?         // potwierdzenie zapoznania się z podsumowaniem (przed podpisem)
 
   // Potwierdzenie adresu e-mail (kliknięcie linku)
   emailConfirmedAt     DateTime?
@@ -260,6 +261,7 @@ model Signature {
   userAgent        String?
   codeConfirmedAt  DateTime?
   pdfSha256        String
+  kartaSha256      String?      // SHA-256 podpisanej karty kwalifikacyjnej
   signatureImageEnc String     // obraz podpisu (PNG), zaszyfrowany
   templateVersion  Int
 }

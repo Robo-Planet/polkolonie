@@ -16,6 +16,7 @@ export async function signWithScreen(token: string, _prev: FormState, formData: 
   const r = await signContract(token, {
     code: values.code ?? "",
     signatureDataUrl: values.signature ?? "",
+    summaryAck: values.summaryAck === "on",
     ip: h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip"),
     userAgent: h.get("user-agent"),
   });
