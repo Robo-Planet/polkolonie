@@ -110,6 +110,7 @@ try {
   await page.goto(`${link}/formularz`);
   await page.fill('input[name="childLastName"]', "Testowy");
   await page.fill('input[name="pesel"]', "20231512341");
+  await page.fill('input[name="parentPesel"]', "44051401359");
   await page.fill('input[name="parentAddress"]', "ul. Testowa 1");
   await page.fill('input[name="parentPostalCode"]', "80-288");
   await page.fill('input[name="parentCity"]', "Gdańsk");
@@ -126,6 +127,8 @@ try {
   check(true, "pełny formularz wysłany (walidacja wieku i zgód przeszła)");
   const pdf = await page.request.get(`${link}/karta`);
   check(pdf.status() === 200 && (pdf.headers()["content-type"] ?? "").includes("application/pdf"), "podgląd karty (PDF) dostępny dla rodzica");
+  const umowa = await page.request.get(`${link}/umowa`);
+  check(umowa.status() === 200 && (umowa.headers()["content-type"] ?? "").includes("application/pdf"), "podgląd umowy (PDF) dostępny dla rodzica");
 
   // 5. Zgłoszenie widoczne w panelu i w dzienniku.
   await admin.goto(`${APP}/admin`);

@@ -18,6 +18,7 @@ const complete = {
   parentFirstName: "Anna", parentLastName: "Nowak", parentAddress: "ul. Testowa 1", parentPostalCode: "80-288",
   parentCity: "Gdańsk", parentPhone: "600123456", childFirstName: "Jan", childLastName: "Nowak",
   pesel: makePesel("2023151234"), // 2020-03-15 -> 6 lat w dniu 1.02.2027
+  parentPesel: makePesel("4405140135"),
   selfReturn: "nie", pickupTime: "16:30",
 };
 const flagsOk = { regulaminAccepted: true, healthConsent: true, childSameAddress: true };

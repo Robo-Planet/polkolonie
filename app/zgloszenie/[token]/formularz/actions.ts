@@ -8,6 +8,7 @@ import { logEvent } from "@/lib/events";
 import { formValues, type FormState } from "@/lib/form-state";
 import { parseFullForm } from "@/lib/full-form";
 import { ensureCharges } from "@/lib/payments/service";
+import { UMOWA_TEMPLATE_VERSION, umowaTemplate } from "@/lib/documents/umowa-template";
 
 // Zapis szkicu i wysłanie pełnego formularza. Szkic zapisuje, co przechodzi walidację formatu;
 // wysłanie wymaga wszystkich pól obowiązkowych. Po wysłaniu formularz jest tylko do odczytu.
@@ -59,8 +60,10 @@ export async function saveFullForm(token: string, _prev: FormState, formData: Fo
       childAddress: d.childAddress || null,
       childPostalCode: d.childPostalCode || null,
       childCity: d.childCity || null,
-      birthDate: parsed.birthDate,
       peselEnc: d.pesel ? encryptField(d.pesel) : null,
+      parentPeselEnc: d.parentPesel ? encryptField(d.parentPesel) : null,
+      // Wersja wzoru umowy i skrót pliku wzorca: zapisywane przy wysłaniu (stare zgłoszenia zostają przy swojej wersji).
+      ...(submit ? { contractTemplateVersion: UMOWA_TEMPLATE_VERSION, contractTemplateSha256: umowaTemplate().sha256 } : {}),
       healthEnc: encryptField(sensitive),
       selfReturn: d.selfReturn,
       pickupTime: d.pickupTime || null,

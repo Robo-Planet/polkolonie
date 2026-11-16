@@ -57,8 +57,8 @@ export async function runReminders(now: Date = new Date()): Promise<ReminderSumm
         const sent = await sendOnce(
           app,
           "deposit-5",
-          `Dzień dobry,\n\nprzypominamy o wpłacie zaliczki ${formatGrosze(deposit.amountGrosze)} za zgłoszenie ${app.code} (turnus ${t.number}).\nTermin: ${formatPlDate(deposit.dueDate)}.\nNumer konta: ${ACCOUNT_NOTE}. W tytule przelewu podaj: ${app.code} ${app.childFirstName}.\n\nMiejsce zostaje zarezerwowane po wpłacie zaliczki.\n\nROBOPLANET EVENTS S.C.`,
-          `Przypomnienie o zaliczce – ${app.code}`,
+          `Dzień dobry,\n\nprzypominamy o wpłacie kaucji rezerwacyjnej ${formatGrosze(deposit.amountGrosze)} za zgłoszenie ${app.code} (turnus ${t.number}).\nTermin: ${formatPlDate(deposit.dueDate)}.\nNumer konta: ${ACCOUNT_NOTE}. W tytule przelewu podaj: ${app.code} ${app.childFirstName}.\n\nMiejsce zostaje zarezerwowane po wpłacie zaliczki.\n\nROBOPLANET EVENTS S.C.`,
+          `Przypomnienie o kaucji rezerwacyjnej – ${app.code}`,
         );
         sent ? summary.sent++ : summary.skipped++;
       }

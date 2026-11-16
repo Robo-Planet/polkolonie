@@ -49,7 +49,7 @@ export default async function ZgloszenieAdminPage({ params }: { params: Promise<
           <tbody>
             {app.charges.map((c) => (
               <tr key={c.id}>
-                <td>{c.kind}</td>
+                <td>{c.kind === "ZALICZKA" ? "kaucja rezerwacyjna" : c.kind === "DOPLATA" ? "dopłata" : "cała kwota"}</td>
                 <td>{formatGrosze(c.amountGrosze)}</td>
                 <td>{formatPlDate(c.dueDate)}</td>
                 <td>{c.paidAt ? `tak (${formatGrosze(c.paidGrosze)})` : `nie (${formatGrosze(c.paidGrosze)})`}</td>

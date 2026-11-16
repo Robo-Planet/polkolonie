@@ -36,6 +36,10 @@ model Organizer {
   city        String
   bankName    String   // Erste
   bankAccount String   // numer konta do przelewów
+  regon       String?  // REGON (umowa)
+  representative String? // osoba reprezentująca (umowa)
+  phone       String?
+  email       String?
   updatedAt   DateTime @updatedAt
 }
 
@@ -90,8 +94,10 @@ model Application {
   childAddress         String?
   childPostalCode      String?
   childCity            String?
-  birthDate            DateTime?         @db.Date // z PESEL (jawna, do ubezpieczenia)
-  peselEnc             String?           // PESEL, zaszyfrowany
+  peselEnc             String?           // PESEL dziecka, zaszyfrowany
+  parentPeselEnc       String?           // PESEL osoby zawierającej umowę, zaszyfrowany
+  contractTemplateVersion Int?           // wersja wzoru umowy, którą zawarto
+  contractTemplateSha256  String?        // SHA-256 wzoru umowy (wersja pliku)
   healthEnc            String?           // JSON: zdrowie i osoby do odbioru, zaszyfrowany
   selfReturn           Boolean?          // zgoda na samodzielny powrót
   pickupTime           String?           // godzina przyprowadzania i odbioru

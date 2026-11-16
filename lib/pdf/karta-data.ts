@@ -1,5 +1,6 @@
 import { decryptField } from "@/lib/crypto";
 import type { KartaData } from "@/lib/pdf/karta";
+import { birthDateFromPesel } from "@/lib/pesel";
 import type { Application, Turnus } from "@/lib/generated/prisma/client";
 
 // Zamienia zgłoszenie z bazy na dane karty (odszyfrowuje PESEL i zdrowie). Wywoływane tylko po weryfikacji tokenu.
@@ -23,7 +24,7 @@ export function kartaDataFor(app: Application & { turnus: Turnus }): KartaData {
     child: {
       firstName: app.childFirstName,
       lastName: app.childLastName ?? "",
-      birthYear: app.birthDate ? app.birthDate.getUTCFullYear() : null,
+      birthYear: pesel ? (birthDateFromPesel(pesel)?.getUTCFullYear() ?? null) : null,
       pesel,
       address: childAddress,
       postal: childPostal,

@@ -42,6 +42,7 @@ export type FullFormInput = {
   childFirstName: string;
   childLastName: string;
   pesel: string;
+  parentPesel: string;
   childSameAddress: boolean;
   childAddress: string;
   childPostalCode: string;
@@ -85,6 +86,10 @@ export function parseFullForm(
     const age = fullYearsBetween(birthDate, opts.turnusStart);
     if (age < opts.minAge) errors.pesel = `Dziecko musi mieć co najmniej ${opts.minAge} lat w dniu rozpoczęcia turnusu`;
   }
+
+  const parentPesel = (values.parentPesel ?? "").replace(/\s/g, "");
+  if (parentPesel && !isValidPesel(parentPesel)) errors.parentPesel = "PESEL: nieprawidłowa suma kontrolna";
+  if (opts.final && !parentPesel) errors.parentPesel = "PESEL osoby zawierającej umowę: wymagany";
 
   const parentPostal = (values.parentPostalCode ?? "").trim();
   if (parentPostal && !isValidPostalCode(parentPostal)) errors.parentPostalCode = "Kod pocztowy: NN-NNN";
@@ -155,6 +160,7 @@ export function parseFullForm(
       childFirstName: req("childFirstName", "Imię dziecka"),
       childLastName: req("childLastName", "Nazwisko dziecka"),
       pesel,
+      parentPesel,
       childSameAddress,
       childAddress: childSameAddress ? "" : (values.childAddress ?? "").trim(),
       childPostalCode: childSameAddress ? "" : childPostal,

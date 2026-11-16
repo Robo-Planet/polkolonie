@@ -22,6 +22,7 @@ export default async function FormularzPage({ params }: { params: Promise<{ toke
       })
     : { health: {}, pickupPersons: [] };
   const pesel = app.peselEnc ? decryptField(app.peselEnc) : "";
+  const parentPesel = app.parentPeselEnc ? decryptField(app.parentPeselEnc) : "";
   const t = app.turnus;
 
   if (app.formSubmittedAt) {
@@ -45,7 +46,7 @@ export default async function FormularzPage({ params }: { params: Promise<{ toke
         Wypełnij dane do umowy i karty kwalifikacyjnej. Możesz zapisać szkic i wrócić przez ten sam link.
         Wysłanie wymaga wszystkich pól oznaczonych jako wymagane.
       </p>
-      <p><a href={`/zgloszenie/${token}/karta`}>Podgląd karty kwalifikacyjnej (PDF)</a></p>
+      <p><a href={`/zgloszenie/${token}/umowa`}>Podgląd umowy (PDF)</a> · <a href={`/zgloszenie/${token}/karta`}>Podgląd karty kwalifikacyjnej (PDF)</a></p>
       <FullForm
         action={saveFullForm.bind(null, token)}
         minAge={t.minAge}
@@ -62,6 +63,7 @@ export default async function FormularzPage({ params }: { params: Promise<{ toke
           childFirstName: app.childFirstName,
           childLastName: app.childLastName ?? "",
           pesel,
+          parentPesel,
           childSameAddress: app.childSameAddress ? "on" : "",
           childAddress: app.childAddress ?? "",
           childPostalCode: app.childPostalCode ?? "",

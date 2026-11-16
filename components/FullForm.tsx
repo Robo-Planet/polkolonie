@@ -27,7 +27,7 @@ export function FullForm({ action, defaults, minAge }: { action: Action; default
   return (
     // key zmienia się po każdej odpowiedzi z wartościami, więc pola startują od aktualnego stanu
     // (React 19 czyści formularz po akcji, a selecty nie odświeżają defaultValue).
-    <form key={JSON.stringify(state.values ?? {})} action={formAction} className="stack">
+    <form key={JSON.stringify(state.values ?? {})} action={formAction} className="stack" noValidate>
       {state.error && <div role="alert" className="notice error">{state.error}</div>}
       {state.ok && state.message && <div role="status" className="notice success">{state.message}</div>}
 
@@ -36,6 +36,7 @@ export function FullForm({ action, defaults, minAge }: { action: Action; default
         <label>Imię osoby zawierającej umowę<input name="parentFirstName" defaultValue={v.parentFirstName} required />{err("parentFirstName")}</label>
         <label>Nazwisko<input name="parentLastName" defaultValue={v.parentLastName} required />{err("parentLastName")}</label>
       </div>
+      <label>PESEL osoby zawierającej umowę (szyfrowany, tylko w umowie)<input name="parentPesel" inputMode="numeric" maxLength={11} defaultValue={v.parentPesel} required />{err("parentPesel")}</label>
       <label>Drugi rodzic (imię i nazwisko, opcjonalnie)<input name="secondParentName" defaultValue={v.secondParentName} /></label>
       <label>Adres zamieszkania rodziców<input name="parentAddress" defaultValue={v.parentAddress} required />{err("parentAddress")}</label>
       <div className="row">

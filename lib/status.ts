@@ -9,7 +9,7 @@ export const STATUS_LABEL: Record<ApplicationStatus, string> = {
   KWALIFIKACJA: "Zakwalifikowane (karta przyjęta)",
   OPLACONE: "Opłacone (dopłata wpłacona)",
   ODMOWA: "Odmowa (zwrot wpłat)",
-  WYGASLA: "Wygasła (decyzja biura)",
+  WYGASLA: "Anulowane (brak kaucji w terminie, § 1 ust. 2)",
   REZERWA: "Rezerwa (brak miejsc)",
 };
 
