@@ -40,13 +40,13 @@ export async function runReminders(now: Date = new Date()): Promise<ReminderSumm
   const today = todayUtc(now);
   const summary: ReminderSummary = { sent: 0, officeNotes: 0, skipped: 0 };
   const apps = await prisma.application.findMany({
-    where: { formSubmittedAt: { not: null }, status: { in: ["ZGLOSZONE", "UMOWA_ZAWARTA", "MIEJSCE", "KWALIFIKACJA"] } },
+    where: { contractSignedAt: { not: null }, status: { in: ["ZGLOSZONE", "UMOWA_ZAWARTA", "MIEJSCE", "KWALIFIKACJA"] } },
     include: { turnus: true, charges: true },
   });
 
   for (const app of apps) {
     const t = app.turnus;
-    const contractDay = todayUtc(app.formSubmittedAt!);
+    const contractDay = todayUtc(app.contractSignedAt!);
     const sinceContract = daysBetween(contractDay, today);
     const link = `${env().APP_URL}`;
 

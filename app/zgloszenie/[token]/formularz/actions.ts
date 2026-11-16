@@ -7,7 +7,6 @@ import { encryptField } from "@/lib/crypto";
 import { logEvent } from "@/lib/events";
 import { formValues, type FormState } from "@/lib/form-state";
 import { parseFullForm } from "@/lib/full-form";
-import { ensureCharges } from "@/lib/payments/service";
 import { UMOWA_TEMPLATE_VERSION, umowaTemplate } from "@/lib/documents/umowa-template";
 
 // Zapis szkicu i wysłanie pełnego formularza. Szkic zapisuje, co przechodzi walidację formatu;
@@ -83,7 +82,6 @@ export async function saveFullForm(token: string, _prev: FormState, formData: Fo
     action: submit ? "form.submitted" : "form.draft_saved",
     note: submit ? "pełny formularz wysłany" : "szkic zapisany",
   });
-  if (submit) await ensureCharges(app.id);
   revalidatePath(`/zgloszenie/${token}`);
   revalidatePath(`/zgloszenie/${token}/formularz`);
 
@@ -93,7 +91,7 @@ export async function saveFullForm(token: string, _prev: FormState, formData: Fo
     // Wartości wracają do formularza: React 19 czyści pola po akcji, a bez tego rodzic traciłby wpisane dane.
     values,
     message: submit
-      ? "Formularz wysłany. Następny krok (umowa i karta do podpisu) pojawi się po wdrożeniu etapu 2."
+      ? "Formularz wysłany. Następny krok: podpis umowy (link na stronie zgłoszenia)."
       : "Szkic zapisany. Możesz wrócić do formularza przez ten sam link.",
   };
 }

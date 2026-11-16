@@ -107,6 +107,8 @@ model Application {
   healthConsentAt      DateTime?
   draftSavedAt         DateTime?
   formSubmittedAt      DateTime?
+  contractSignedAt     DateTime?         // data zawarcia umowy (podpis)
+  contractSignatureSha256 String?        // SHA-256 podpisanej umowy
 
   // Potwierdzenie adresu e-mail (kliknięcie linku)
   emailConfirmedAt     DateTime?
@@ -124,6 +126,9 @@ model Application {
 
   events               Event[]
   charges              Charge[]
+  signCodes            SignCode[]
+  signature            Signature?
+  documents            Document[]
 
   @@index([turnusId, status])
 }
@@ -228,4 +233,47 @@ model Allocation {
   charge         Charge          @relation(fields: [chargeId], references: [id])
   amountGrosze   Int
   createdAt      DateTime        @default(now())
+}
+
+// Kod potwierdzający podpis (wysyłany e-mailem). W bazie tylko skrót; 10 minut ważności, limit prób.
+model SignCode {
+  id             String      @id @default(cuid())
+  applicationId  String
+  application    Application @relation(fields: [applicationId], references: [id])
+  codeHash       String
+  expiresAt      DateTime
+  attempts       Int         @default(0)
+  consumedAt     DateTime?
+  createdAt      DateTime    @default(now())
+
+  @@index([applicationId, createdAt])
+}
+
+// Dowód podpisu (podpis na ekranie): czas, IP, przeglądarka, potwierdzenie kodu, skrót PDF.
+model Signature {
+  id               String      @id @default(cuid())
+  applicationId    String      @unique
+  application      Application @relation(fields: [applicationId], references: [id])
+  method           String      // SCREEN (podpis na ekranie) | TRUSTED (podpis zaufany) | PRINT (wydruk)
+  signedAt         DateTime
+  ip               String?
+  userAgent        String?
+  codeConfirmedAt  DateTime?
+  pdfSha256        String
+  signatureImageEnc String     // obraz podpisu (PNG), zaszyfrowany
+  templateVersion  Int
+}
+
+// Dokument zawarty w zgłoszeniu (umowa podpisana). Plik trzymany w bazie do czasu archiwum w pCloud.
+model Document {
+  id             String      @id @default(cuid())
+  applicationId  String
+  application    Application @relation(fields: [applicationId], references: [id])
+  kind           String      // UMOWA_PODPISANA
+  templateVersion Int
+  sha256         String
+  bytes          Bytes
+  createdAt      DateTime    @default(now())
+
+  @@unique([applicationId, kind])
 }

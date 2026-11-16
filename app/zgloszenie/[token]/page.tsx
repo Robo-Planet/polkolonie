@@ -50,6 +50,10 @@ export default async function ZgloszenieTokenPage({ params }: { params: Promise<
         <dd>{STATUS_LABEL[app.status]}</dd>
       </dl>
 
+      {app.formSubmittedAt && !app.contractSignedAt && (
+        <p><a className="button" href={`/zgloszenie/${token}/podpis`}>Przejdź do podpisu umowy</a></p>
+      )}
+
       {app.emailConfirmedAt && !app.formSubmittedAt && (
         <p><a className="button" href={`/zgloszenie/${token}/formularz`}>Uzupełnij pełny formularz</a></p>
       )}

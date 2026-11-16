@@ -14,15 +14,15 @@ export async function ensureCharges(applicationId: string): Promise<void> {
     where: { id: applicationId },
     include: { turnus: true, charges: true },
   });
-  if (!app || !app.formSubmittedAt) return;
+  if (!app || !app.contractSignedAt) return; // należności powstają dopiero przy zawarciu umowy
   const plan = planCharges({
     priceGrosze: app.turnus.priceGrosze,
     discountGrosze: app.turnus.discountGrosze,
     returning: app.returningParticipant,
     depositGrosze: app.turnus.depositGrosze,
     startDate: app.turnus.startDate,
-    // Data umowy: dzień wysłania formularza (podpis elektroniczny). Ścieżka wydruku poda datę skanu.
-    contractDate: todayUtc(app.formSubmittedAt),
+    // Data zawarcia umowy: dzień podpisu (ścieżka wydruku: dzień wgrania skanu).
+    contractDate: todayUtc(app.contractSignedAt),
   });
   const existing = new Set(app.charges.map((c) => c.kind));
   for (const p of plan) {

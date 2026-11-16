@@ -9,10 +9,14 @@ import { buildUmowaPdf } from "@/lib/pdf/umowa";
 
 // Składa umowę dla zgłoszenia: dane z bazy → pola wzoru → PDF. Przed wysłaniem formularza to podgląd
 // (data zawarcia = dziś, stopka z oznaczeniem podglądu).
-export async function buildUmowaForApplication(applicationId: string): Promise<Uint8Array> {
+export async function buildUmowaForApplication(
+  applicationId: string,
+  signing?: { date: Date; png: Uint8Array },
+): Promise<Uint8Array> {
   const app = await prisma.application.findUniqueOrThrow({ where: { id: applicationId }, include: { turnus: true } });
   const organizer = await prisma.organizer.findUniqueOrThrow({ where: { id: 1 } });
-  const contractDate = todayUtc(app.formSubmittedAt ?? new Date());
+  // Data zawarcia: dzień podpisu (przy podpisie), a po podpisie – dzień zapisany w zgłoszeniu.
+  const contractDate = todayUtc(signing?.date ?? app.contractSignedAt ?? new Date());
   const late = daysBetween(contractDate, app.turnus.startDate) < 14;
   const price = app.turnus.priceGrosze - (app.returningParticipant ? app.turnus.discountGrosze : 0);
   const deposit = Math.min(app.turnus.depositGrosze, price);
@@ -33,10 +37,14 @@ export async function buildUmowaForApplication(applicationId: string): Promise<U
     totalGrosze: price,
     depositGrosze: deposit,
   });
-  const blocks = renderUmowaBlocks(fields, { late });
-  const submitted = app.formSubmittedAt ? "" : " · PODGLĄD (jeszcze nie zawarta)";
-  const footer = `Wzór umowy v${UMOWA_TEMPLATE_VERSION}, obowiązuje od ${UMOWA_TEMPLATE_EFFECTIVE} · zgłoszenie ${app.code}${submitted}`;
-  return buildUmowaPdf(blocks, footer);
+  const signed = signing ?? (app.contractSignedAt ? { date: app.contractSignedAt } : undefined);
+  const withDate = { ...fields, data_podpisu: signed ? PL_DATE(signed.date) : "" };
+  const blocks = renderUmowaBlocks(withDate, { late });
+  const preview = signed ? "" : " · PODGLĄD (jeszcze nie zawarta)";
+  const footer = `Wzór umowy v${UMOWA_TEMPLATE_VERSION}, obowiązuje od ${UMOWA_TEMPLATE_EFFECTIVE} · zgłoszenie ${app.code}${preview}`;
+  return buildUmowaPdf(blocks, footer, { signaturePng: signing?.png });
 }
+
+const PL_DATE = (d: Date) => d.toISOString().slice(0, 10).split("-").reverse().join(".");
 
 

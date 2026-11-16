@@ -29,7 +29,11 @@ function wrapLine(text: string, font: PDFFont, size: number, maxWidth: number): 
   return out;
 }
 
-export async function buildUmowaPdf(blocks: Block[], footer: string): Promise<Uint8Array> {
+export async function buildUmowaPdf(
+  blocks: Block[],
+  footer: string,
+  opts: { signaturePng?: Uint8Array } = {},
+): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
   const font = await doc.embedFont(await readFile(path.join(process.cwd(), "lib/pdf/fonts/DejaVuSans.ttf")), { subset: true });
@@ -50,6 +54,9 @@ export async function buildUmowaPdf(blocks: Block[], footer: string): Promise<Ui
       y -= size + gap;
     }
   };
+
+  // Miejsce podpisu rodzica: pierwsza komórka wiersza z danymi w tabeli podpisów.
+  let signatureSpot: { page: PDFPage; x: number; y: number } | undefined;
 
   for (const b of blocks) {
     if (b.type === "h1") {
@@ -79,12 +86,25 @@ export async function buildUmowaPdf(blocks: Block[], footer: string): Promise<Ui
             page.drawText(line, { x, y: yy - 10, size: 10, font: ri === 0 ? bold : font });
             yy -= 14;
           }
+          if (ri === 1 && ci === 0) signatureSpot = { page, x, y };
           if (ri > 0) page.drawLine({ start: { x, y: y - 56 }, end: { x: x + colW - 16, y: y - 56 }, thickness: 0.5, color: rgb(0.4, 0.4, 0.4) });
         });
         y -= ri === 0 ? 18 : 62;
       });
       y -= 6;
     }
+  }
+
+  // Podpis na ekranie: obraz PNG w miejscu podpisu rodzica, nad linią.
+  if (opts.signaturePng && signatureSpot) {
+    const img = await doc.embedPng(opts.signaturePng);
+    const scale = Math.min(150 / img.width, 50 / img.height);
+    signatureSpot.page.drawImage(img, {
+      x: signatureSpot.x + 4,
+      y: signatureSpot.y - 56 + 4,
+      width: img.width * scale,
+      height: img.height * scale,
+    });
   }
 
   // Stopka na każdej stronie.
