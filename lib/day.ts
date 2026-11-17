@@ -51,3 +51,15 @@ const plDate = new Intl.DateTimeFormat("pl-PL", { timeZone: "UTC", day: "numeric
 export function formatPlDate(date: Date): string {
   return plDate.format(date);
 }
+
+/** Dodaje dni robocze (pomija soboty i niedziele; święta nie są uwzględniane). */
+export function addBusinessDays(date: Date, days: number): Date {
+  const d = new Date(date.getTime());
+  let left = days;
+  while (left > 0) {
+    d.setUTCDate(d.getUTCDate() + 1);
+    const wd = d.getUTCDay();
+    if (wd !== 0 && wd !== 6) left--;
+  }
+  return d;
+}

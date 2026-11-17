@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { formatPlDate } from "@/lib/day";
 import { formatGrosze } from "@/lib/money";
 import { overdueDeposits } from "@/lib/payments/cancel";
+import { reportedWithoutPayment } from "@/lib/payments/reported";
 import { AssignPaymentForm } from "@/components/AssignPaymentForm";
 import { cancelApplication } from "./cancel-actions";
 
@@ -9,8 +10,9 @@ export const dynamic = "force-dynamic";
 
 // „Do wyjaśnienia”: kaucja po terminie (do anulowania przez biuro), wpływy bez dopasowania.
 export default async function WplatyPage() {
-  const [overdue, txs] = await Promise.all([
+  const [overdue, reported, txs] = await Promise.all([
     overdueDeposits(),
+    reportedWithoutPayment(),
     prisma.bankTransaction.findMany({
       where: { matchStatus: { in: ["UNMATCHED", "PARTIAL"] } },
       orderBy: { bookedAt: "desc" },
@@ -49,6 +51,17 @@ export default async function WplatyPage() {
             ))}
           </tbody>
         </table>
+      )}
+
+      <h2>Zgłoszono wpłatę („Już zapłaciłem”), brak wpływu</h2>
+      {reported.length === 0 ? (
+        <p>Brak takich zgłoszeń.</p>
+      ) : (
+        <ul>
+          {reported.map((r) => (
+            <li key={r.id}>{r.code} – zgłoszono {formatPlDate(r.paymentReportedAt!)}, należność nadal nieopłacona</li>
+          ))}
+        </ul>
       )}
 
       <h2>Wpływy bez dopasowania</h2>

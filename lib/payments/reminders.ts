@@ -3,28 +3,28 @@ import { formatPlDate, todayUtc, daysBetween } from "@/lib/day";
 import { formatGrosze } from "@/lib/money";
 import { logEvent } from "@/lib/events";
 import { sendMail } from "@/lib/mail";
-import { env } from "@/lib/env";
+import { newPaymentLink, remindersSuspended } from "@/lib/payments/reported";
 
 // Przypomnienia i powiadomienia biura wg harmonogramu ze specyfikacji. Każdy krok wysyłany raz
-// (klucz w dzienniku zdarzeń). Zadanie uruchamia się codziennie (endpoint /api/cron/reminders).
-
-const ACCOUNT_NOTE = "konto Erste ROBOPLANET EVENTS S.C.";
+// (klucz w dzienniku zdarzeń). Wstrzymane, gdy rodzic zgłosił wpłatę („Już zapłaciłem”).
+// Zadanie uruchamia się codziennie (endpoint /api/cron/reminders).
 
 export type ReminderSummary = { sent: number; officeNotes: number; skipped: number };
 
 async function alreadyDone(applicationId: string, action: string, key: string): Promise<boolean> {
-  const e = await prisma.event.findFirst({ where: { applicationId, action, note: key } });
-  return !!e;
+  return !!(await prisma.event.findFirst({ where: { applicationId, action, note: key } }));
 }
 
+/** Wysyła wiadomość raz. Treść dostaje link „Już zapłaciłem” – generowany dopiero przy wysyłce. */
 async function sendOnce(
-  app: { id: string; code: string; parentEmail: string; parentFirstName: string; childFirstName: string },
+  app: { id: string; parentEmail: string },
   key: string,
-  text: string,
   subject: string,
+  text: (payLink: string) => string,
 ): Promise<boolean> {
   if (await alreadyDone(app.id, "reminder.sent", key)) return false;
-  await sendMail({ to: app.parentEmail, subject, text });
+  const payLink = await newPaymentLink(app.id);
+  await sendMail({ to: app.parentEmail, subject, text: text(payLink) });
   await logEvent({ applicationId: app.id, actor: "system", action: "reminder.sent", note: key });
   return true;
 }
@@ -40,29 +40,32 @@ export async function runReminders(now: Date = new Date()): Promise<ReminderSumm
   const today = todayUtc(now);
   const summary: ReminderSummary = { sent: 0, officeNotes: 0, skipped: 0 };
   const apps = await prisma.application.findMany({
-    where: { contractSignedAt: { not: null }, status: { in: ["ZGLOSZONE", "UMOWA_ZAWARTA", "MIEJSCE", "KWALIFIKACJA"] } },
+    where: { contractSignedAt: { not: null }, status: { in: ["UMOWA_ZAWARTA", "MIEJSCE", "KWALIFIKACJA"] } },
     include: { turnus: true, charges: true },
   });
 
   for (const app of apps) {
     const t = app.turnus;
-    const contractDay = todayUtc(app.contractSignedAt!);
-    const sinceContract = daysBetween(contractDay, today);
-    const link = `${env().APP_URL}`;
+    const sinceContract = daysBetween(todayUtc(app.contractSignedAt!), today);
+    const suspended = remindersSuspended(app.paymentReportedAt, now);
 
-    // Zaliczka: 5. dzień bez wpłaty – przypomnienie rodzica; 7. dzień – decyzja biura.
-    const deposit = app.charges.find((c) => c.kind === "ZALICZKA" && !c.paidAt);
+    // Kaucja: 5. dzień bez wpłaty – przypomnienie rodzica; 7. dzień – decyzja biura (anulowanie w panelu).
+    const deposit = app.charges.find((c) => (c.kind === "ZALICZKA" || c.kind === "CALOSC") && !c.paidAt);
     if (deposit) {
       if (sinceContract >= 5) {
-        const sent = await sendOnce(
-          app,
-          "deposit-5",
-          `Dzień dobry,\n\nprzypominamy o wpłacie kaucji rezerwacyjnej ${formatGrosze(deposit.amountGrosze)} za zgłoszenie ${app.code} (turnus ${t.number}).\nTermin: ${formatPlDate(deposit.dueDate)}.\nNumer konta: ${ACCOUNT_NOTE}. W tytule przelewu podaj: ${app.code} ${app.childFirstName}.\n\nMiejsce zostaje zarezerwowane po wpłacie zaliczki.\n\nROBOPLANET EVENTS S.C.`,
-          `Przypomnienie o kaucji rezerwacyjnej – ${app.code}`,
-        );
-        sent ? summary.sent++ : summary.skipped++;
+        if (suspended) summary.skipped++;
+        else {
+          const sent = await sendOnce(
+            app,
+            "deposit-5",
+            `Przypomnienie o kaucji rezerwacyjnej – ${app.code}`,
+            (payLink) =>
+              `Dzień dobry,\n\nprzypominamy o wpłacie kaucji rezerwacyjnej ${formatGrosze(deposit.amountGrosze)} za zgłoszenie ${app.code} (turnus ${t.number}).\nTermin: ${formatPlDate(deposit.dueDate)}.\nTytuł przelewu: ${app.code} ${app.childFirstName}.\n\nJeśli wpłata już została wykonana, kliknij: ${payLink}\n\nROBOPLANET EVENTS S.C.`,
+          );
+          sent ? summary.sent++ : summary.skipped++;
+        }
       }
-      if (sinceContract >= 7 && (await officeOnce(app.id, "deposit-7", "brak zaliczki po 7 dniach – do decyzji"))) summary.officeNotes++;
+      if (sinceContract >= 7 && (await officeOnce(app.id, "deposit-7", "brak kaucji po 7 dniach – do decyzji"))) summary.officeNotes++;
     }
 
     // Dopłata: 21 dni przed startem – informacja; 14 dni – przypomnienie; 7 dni – lista zaległości dla biura.
@@ -70,22 +73,30 @@ export async function runReminders(now: Date = new Date()): Promise<ReminderSumm
     if (doplata && (app.status === "MIEJSCE" || app.status === "KWALIFIKACJA")) {
       const toStart = daysBetween(today, t.startDate);
       if (toStart <= 21) {
-        const sent = await sendOnce(
-          app,
-          "doplata-21",
-          `Dzień dobry,\n\nprzypominamy, że dopłata ${formatGrosze(doplata.amountGrosze)} za zgłoszenie ${app.code} jest płatna do ${formatPlDate(doplata.dueDate)}.\nTytuł przelewu: ${app.code} ${app.childFirstName}.\n\nROBOPLANET EVENTS S.C.`,
-          `Informacja o dopłacie – ${app.code}`,
-        );
-        sent ? summary.sent++ : summary.skipped++;
+        if (suspended) summary.skipped++;
+        else {
+          const sent = await sendOnce(
+            app,
+            "doplata-21",
+            `Informacja o dopłacie – ${app.code}`,
+            (payLink) =>
+              `Dzień dobry,\n\nprzypominamy, że dopłata ${formatGrosze(doplata.amountGrosze)} za zgłoszenie ${app.code} jest płatna do ${formatPlDate(doplata.dueDate)}.\nTytuł przelewu: ${app.code} ${app.childFirstName}.\n\nJeśli wpłata już została wykonana, kliknij: ${payLink}\n\nROBOPLANET EVENTS S.C.`,
+          );
+          sent ? summary.sent++ : summary.skipped++;
+        }
       }
       if (toStart <= 14) {
-        const sent = await sendOnce(
-          app,
-          "doplata-14",
-          `Dzień dobry,\n\nw dniu ${formatPlDate(doplata.dueDate)} mija termin dopłaty ${formatGrosze(doplata.amountGrosze)} za zgłoszenie ${app.code}.\nTytuł przelewu: ${app.code} ${app.childFirstName}.\n\nROBOPLANET EVENTS S.C.`,
-          `Przypomnienie o dopłacie – ${app.code}`,
-        );
-        sent ? summary.sent++ : summary.skipped++;
+        if (suspended) summary.skipped++;
+        else {
+          const sent = await sendOnce(
+            app,
+            "doplata-14",
+            `Przypomnienie o dopłacie – ${app.code}`,
+            (payLink) =>
+              `Dzień dobry,\n\nw dniu ${formatPlDate(doplata.dueDate)} mija termin dopłaty ${formatGrosze(doplata.amountGrosze)} za zgłoszenie ${app.code}.\nTytuł przelewu: ${app.code} ${app.childFirstName}.\n\nJeśli wpłata już została wykonana, kliknij: ${payLink}\n\nROBOPLANET EVENTS S.C.`,
+          );
+          sent ? summary.sent++ : summary.skipped++;
+        }
       }
       if (toStart <= 7 && (await officeOnce(app.id, "doplata-7", "brak dopłaty 7 dni przed startem – lista zaległości"))) summary.officeNotes++;
     }

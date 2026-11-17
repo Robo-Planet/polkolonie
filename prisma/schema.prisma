@@ -109,6 +109,8 @@ model Application {
   formSubmittedAt      DateTime?
   contractSignedAt     DateTime?         // data zawarcia umowy (podpis)
   contractSignatureSha256 String?        // SHA-256 podpisanej umowy
+  paymentReportedAt    DateTime?         // rodzic kliknął „Już zapłaciłem”
+  paymentLinkTokenHash String?           @unique // skrót tokenu linku „Już zapłaciłem” (z przypomnień)
   summaryAckAt         DateTime?         // potwierdzenie zapoznania się z podsumowaniem (przed podpisem)
 
   // Potwierdzenie adresu e-mail (kliknięcie linku)
